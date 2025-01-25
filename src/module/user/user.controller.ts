@@ -47,7 +47,7 @@ return res.status(200).json({
                 return res.status(400).json({ message: "Phone number and OTP are required" });
             }
 
-            if (otp.length !== 6) {
+            if (otp.length !== 5) {
                 return res.status(400).json({ message: "otp must have a length of 6"})
             }
     
