@@ -9,28 +9,30 @@ export class UserController {
         try {
 
             const { phoneNumber } = req.body
-// Get the repository
-const userRepository = AppDataSource.getRepository(UserData);
 
-// Check if user already exists
-let user = await userRepository.findOneBy({ phoneNumber });
-if (!user) {
-    // Create a new user if not found
-    user = userRepository.create({ phoneNumber });
-    await userRepository.save(user);
-}
+            console.log(phoneNumber)
+            // Get the repository
+             const userRepository = AppDataSource.getRepository(UserData);
 
-// Generate and save a hardcoded OTP
-const otp = "12345"; // Hardcoded OTP for test environment
-user.otp = otp;
-user.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // OTP valid for 5 minutes
-await userRepository.save(user);
+              // Check if user already exists
+             let user = await userRepository.findOneBy({ phoneNumber });
+            if (!user) {
+             // Create a new user if not found
+            user = userRepository.create({ phoneNumber });
+            await userRepository.save(user);
+             }
 
-// Respond with success message
-return res.status(200).json({
-    success: true,
-    message: "OTP sent to phone number",
-});
+              // Generate and save a hardcoded OTP
+              const otp = "12345"; // Hardcoded OTP for test environment
+              user.otp = otp;
+               user.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
+              await userRepository.save(user);
+
+              // Respond with success message
+             return res.status(200).json({
+              success: true,
+              message: "OTP sent to phone number",
+              }); 
 
 
         } catch (error) {
@@ -48,7 +50,7 @@ return res.status(200).json({
             }
 
             if (otp.length !== 5) {
-                return res.status(400).json({ message: "otp must have a length of 6"})
+                return res.status(400).json({ message: "otp must have a length of 5"})
             }
     
             // Get the repository
@@ -63,11 +65,6 @@ return res.status(200).json({
             // Check if OTP matches and is not expired
             if (user.otp !== otp ) {
                 return res.status(400).json({ message: "Invalid OTP" });
-            }
-    
-            // Check if OTP matches and is not expired
-            if (user.otpExpiresAt && (new Date() > user.otpExpiresAt)) {
-                return res.status(400).json({ message: "expired OTP" });
             }
     
             // OTP is valid - clear the OTP and mark the user as verified
